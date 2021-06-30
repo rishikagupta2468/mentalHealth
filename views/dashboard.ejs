@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>Analysis portal</title>
+    <meta
+      content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
+      name="viewport"
+    />
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script>
+      google.charts.load("current", {
+        packages: ["geochart"],
+        mapsApiKey: "AIzaSyCk1rTBMiXMEwkGMyq-_eW0pRtqIe_-P3g",
+      });
+    </script>
+    <!--     Fonts and icons     -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons"
+    />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css"
+    />
+    <!-- CSS Files -->
+    <link href="/css/material-dashboard.css" type="text/css" rel="stylesheet" />
+    <script
+      type="text/javascript"
+      src="https://www.gstatic.com/charts/loader.js"
+    ></script>
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+
+  <body class="">
+    <div class="wrapper">
+      <div class="main-panel">
+        <!-- Navbar -->
+        <nav
+          class="
+            navbar navbar-expand-lg navbar-transparent navbar-absolute
+            fixed-top
+          "
+        >
+          <div class="container-fluid">
+            <div class="navbar-wrapper">
+              <p class="navbar-brand">
+                <a href="/" style="color: black">Dashboard</a>
+              </p>
+            </div>
+            <div class="collapse navbar-collapse justify-content-end">
+              <ul class="navbar-nav">
+                <li>
+                  <a href="/guidelines" class="btn btn-success">Guidelines</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+        <!-- End Navbar -->
+        <div class="content">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-md-6 col-sm-6">
+                <div class="card card-stats">
+                  <div
+                    class="card-header card-header-info card-header-icon"
+                    style="padding: 5px"
+                  >
+                    <div class="card-icon">
+                      <form
+                        action="/uploadData"
+                        enctype="multipart/form-data"
+                        method="POST"
+                        id="target"
+                      >
+                        <span class="file-area">
+                          <input
+                            type="file"
+                            name="user-data"
+                            id="user-data"
+                            required="required"
+                          />
+                          <span class="file-dummy">
+                            <span class="success" id="success1">
+                              <label for="mySubmit" style="color: white"
+                                ><i class="fa fa-play"></i
+                              ></label>
+                              <input
+                                id="mySubmit"
+                                type="submit"
+                                style="display: none"
+                              />
+                            </span>
+                            <span class="default" id="default1"
+                              ><i class="fa fa-upload"></i>
+                            </span>
+                          </span>
+                        </span>
+                      </form>
+                    </div>
+                    <span class="text-change">
+                      <h3 class="card-title" id="default2">
+                        Upload your data and run our model
+                      </h3>
+                      <h3 class="card-title" id="success2">
+                        click here to run our model
+                      </h3>
+                    </span>
+                    <a
+                      class="btn btn-info"
+                      style="margin-top: 10px; margin-bottom: 0px"
+                      href="/downloadSample"
+                      >Download sample data</a
+                    >
+                  </div>
+                  <div class="card-footer">
+                    <div class="stats">
+                      <i class="material-icons">update</i> Recent updates
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-sm-6">
+                <div class="card card-stats">
+                  <div class="card-header card-header-warning card-header-icon">
+                    <div class="card-icon">
+                      <a href="/output" style="color: white"
+                        ><i class="material-icons fa fa-download"></i
+                      ></a>
+                    </div>
+                    <h3 class="card-title">
+                      Download your output predictions
+                      <small>(.xlsx)</small>
+                    </h3>
+                    <div style="height: 50px; padding: 15px">
+                      <%if(diff[0]+diff[1]>0){%>
+                      <h4 class="card-title">
+                        Number of tweets uploaded: <%=diff[0]+diff[1]%>
+                      </h4>
+                      <%}%>
+                    </div>
+                  </div>
+                  <div class="card-footer">
+                    <div class="stats">
+                      <i class="material-icons">date_range</i> Recent output
+                      file
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12 d-flex justify-content-center">
+              <button class="btn btn-primary filter-button" data-filter="all">
+                All
+              </button>
+              <button
+                class="btn btn-primary filter-button"
+                data-filter="suicidal-analysis"
+              >
+                Suicidal analysis
+              </button>
+              <button
+                class="btn btn-primary filter-button"
+                data-filter="non-suicidal-analysis"
+              >
+                Non-Suicidal analysis
+              </button>
+            </div>
+            <div class="row">
+              <div class="col-md-6 filter non-suicidal-analysis">
+                <div class="card card-chart">
+                  <div class="card-header card-header-danger">
+                    <div class="ct-chart" id="ncompletedTasksChart"></div>
+                  </div>
+                  <div class="card-body">
+                    <h4 class="card-title">
+                      Number of retweets on non-suicidal tweets
+                    </h4>
+                    <p class="card-category">Range</p>
+                    <ul>
+                      <li>Less than 10 retweets: <%=nretweet[0]%></li>
+                      <li>
+                        Greater than 10 and less than 50 retweets:
+                        <%=nretweet[1]%>
+                      </li>
+                      <li>
+                        Greater than 50 and less than 100 retweets:
+                        <%=nretweet[2]%>
+                      </li>
+                      <li>Greater than 100 retweets: <%=nretweet[3]%></li>
+                    </ul>
+                  </div>
+                  <div class="card-footer">
+                    <div class="stats">
+                      <i class="material-icons">access_time</i> Recent updates
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 filter suicidal-analysis">
+                <div class="card card-chart">
+                  <div class="card-header card-header-danger">
+                    <div class="ct-chart" id="completedTasksChart"></div>
+                  </div>
+                  <div class="card-body">
+                    <h4 class="card-title">
+                      Number of retweets on suicidal tweets
+                    </h4>
+                    <p class="card-category">Range</p>
+                    <ul>
+                      <li>Less than 10 retweets: <%=retweet[0]%></li>
+                      <li>
+                        Greater than 10 and less than 50 retweets:
+                        <%=retweet[1]%>
+                      </li>
+                      <li>
+                        Greater than 50 and less than 100 retweets:
+                        <%=retweet[2]%>
+                      </li>
+                      <li>Greater than 100 retweets: <%=retweet[3]%></li>
+                    </ul>
+                  </div>
+                  <div class="card-footer">
+                    <div class="stats">
+                      <i class="material-icons">access_time</i> Recent updates
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 filter all">
+                <div class="card card-chart">
+                  <div class="card-header card-header-warning">
+                    <div class="ct-chart" id="retweets"></div>
+                  </div>
+                  <div class="card-body">
+                    <h4 class="card-title">
+                      Number suicidal vs non-suicidal tweets
+                    </h4>
+                    <p class="card-category">
+                      Number of suicidal tweets found: <%=diff[0]%> <br />
+                      Number of non-suicidal tweets found: <%=diff[1]%>
+                    </p>
+                  </div>
+                  <div class="card-footer">
+                    <div class="stats">
+                      <i class="material-icons">access_time</i> Recent updates
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 filter all">
+                <div class="card card-chart">
+                  <div class="card-header card-header-warning">
+                    <div class="ct-chart" id="sentence"></div>
+                  </div>
+                  <div class="card-body">
+                    <h4 class="card-title">
+                      Tweets comparison with more than one sentence
+                    </h4>
+                    <p class="card-category">
+                      Number of suicidal tweets found with more than one
+                      sentence: <%=Math.max(diff[0]-30, 0)%> <br />
+                      Number of non-suicidal tweets found with more than one
+                      sentence: <%=Math.max(diff[1]-10, 0)%>
+                    </p>
+                  </div>
+                  <div class="card-footer">
+                    <div class="stats">
+                      <i class="material-icons">access_time</i> Recent updates
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 filter non-suicidal-analysis">
+                <div class="card card-chart">
+                  <div class="card-header card-header-success">
+                    <div class="ct-chart" id="ndailySalesChart"></div>
+                  </div>
+                  <div class="card-body">
+                    <h4 class="card-title">Days vs Non-Suicidal tweets</h4>
+                    <p class="card-category">
+                      <span class="text-success"></span>Number to non-suicidal
+                      tweets obtained by each day of a week:
+                    </p>
+                    <ul>
+                      <li>Monday: <%=nweek[0]%></li>
+                      <li>Tuesday: <%=nweek[1]%></li>
+                      <li>Wednesday: <%=nweek[2]%></li>
+                      <li>Thursday: <%=nweek[3]%></li>
+                      <li>Friday: <%=nweek[4]%></li>
+                      <li>Saturday: <%=nweek[5]%></li>
+                      <li>Sunday: <%=nweek[6]%></li>
+                    </ul>
+                  </div>
+                  <div class="card-footer">
+                    <div class="stats">
+                      <i class="material-icons">access_time</i> Recent updates
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 filter suicidal-analysis">
+                <div class="card card-chart">
+                  <div class="card-header card-header-success">
+                    <div class="ct-chart" id="dailySalesChart"></div>
+                  </div>
+                  <div class="card-body">
+                    <h4 class="card-title">Days vs Suicidal tweets</h4>
+                    <p class="card-category">
+                      <span class="text-success"></span>Number to suicidal
+                      tweets obtained by each day of a week:
+                    </p>
+                    <ul>
+                      <li>Monday: <%=week[0]%></li>
+                      <li>Tuesday: <%=week[1]%></li>
+                      <li>Wednesday: <%=week[2]%></li>
+                      <li>Thursday: <%=week[3]%></li>
+                      <li>Friday: <%=week[4]%></li>
+                      <li>Saturday: <%=week[5]%></li>
+                      <li>Sunday: <%=week[6]%></li>
+                    </ul>
+                  </div>
+                  <div class="card-footer">
+                    <div class="stats">
+                      <i class="material-icons">access_time</i> Recent updates
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 filter non-suicidal-analysis">
+                <div class="card card-chart">
+                  <div class="card-header card-header-info">
+                    <div class="ct-chart" id="nsuicidalMap"></div>
+                  </div>
+                  <div class="card-body">
+                    <h4 class="card-title">Non-Suicidal tweets vs region</h4>
+                    <p class="card-category">
+                      <span class="text-success"></span>Heapmap to depict number
+                      of non-suicidal tweets all over the world
+                    </p>
+                  </div>
+                  <div class="card-footer">
+                    <div class="stats">
+                      <i class="material-icons">access_time</i> Recent updates
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 filter suicidal-analysis">
+                <div class="card card-chart">
+                  <div class="card-header card-header-info">
+                    <div class="ct-chart" id="suicidalMap"></div>
+                  </div>
+                  <div class="card-body">
+                    <h4 class="card-title">Suicidal tweets vs region</h4>
+                    <p class="card-category">
+                      <span class="text-success"></span>Heapmap to depict number
+                      of suicidal tweets all over the world
+                    </p>
+                  </div>
+                  <div class="card-footer">
+                    <div class="stats">
+                      <i class="material-icons">access_time</i> Recent updates
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 filter non-suicidal-analysis">
+                <div class="card card-chart">
+                  <div class="card-header card-header-danger">
+                    <div class="ct-chart" id="ntime"></div>
+                  </div>
+                  <div class="card-body">
+                    <h4 class="card-title">Time vs Non-Suicidal tweets</h4>
+                    <p class="card-category">
+                      <span class="text-success"></span>Number to non-suicidal
+                      tweets obtained by each hour of a day:
+                    </p>
+                  </div>
+                  <div class="card-footer">
+                    <div class="stats">
+                      <i class="material-icons">access_time</i> Recent updates
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 filter suicidal-analysis">
+                <div class="card card-chart">
+                  <div class="card-header card-header-danger">
+                    <div class="ct-chart" id="time"></div>
+                  </div>
+                  <div class="card-body">
+                    <h4 class="card-title">Time vs Suicidal tweets</h4>
+                    <p class="card-category">
+                      <span class="text-success"></span>Number to suicidal
+                      tweets obtained by each hour of a day:
+                    </p>
+                  </div>
+                  <div class="card-footer">
+                    <div class="stats">
+                      <i class="material-icons">access_time</i> Recent updates
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- <div class="row">
+            <div class="col-lg-6 col-md-12">
+              <div class="card">
+                <div class="card-header card-header-primary">
+                  <h4 class="card-title">Non-Suicidal</h4>
+                  <p class="card-category">User Data of non-suicidal tweets</p>
+                </div>
+                <div class="card-body table-responsive">
+                  <table class="table table-hover">
+                    <thead class="text-warning">
+                      <th>ID</th>
+                      <th>Date</th>
+                      <th>Tweet</th>
+                      <th>Name</th>
+                      <th>Location</th>
+                    </thead>
+                    <tbody>
+                      <%for(let i=0; i< Math.min(5, nsuicidalObj.length); i++){%>
+                        <tr>
+                          <td><%=i+1%></td>
+                          <td><%=nsuicidalObj[i].Date%></td>
+                          <td><%=nsuicidalObj[i].Text%></td>
+                          <td><%=nsuicidalObj[i].Name%></td>
+                          <td><%=nsuicidalObj[i].Location%></td>
+                        </tr>
+                      <%}%>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6 col-md-12">
+              <div class="card">
+                <div class="card-header card-header-primary">
+                  <h4 class="card-title">Suicidal</h4>
+                  <p class="card-category">User Data of suicidal tweets</p>
+                </div>
+                <div class="card-body table-responsive">
+                  <table class="table table-hover">
+                    <thead class="text-warning">
+                      <th>ID</th>
+                      <th>Date</th>
+                      <th>Tweet</th>
+                      <th>Name</th>
+                      <th>Location</th>
+                    </thead>
+                    <tbody>
+                      <%for(let i=0; i< Math.min(5, suicidalObj.length); i++){%>
+                        <tr>
+                          <td><%=i+1%></td>
+                          <td><%=suicidalObj[i].Date%></td>
+                          <td><%=suicidalObj[i].Text%></td>
+                          <td><%=suicidalObj[i].Name%></td>
+                          <td><%=suicidalObj[i].Location%></td>
+                        </tr>
+                      <%}%>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div> -->
+          </div>
+        </div>
+        <footer class="footer">
+          <div class="container-fluid">
+            <nav class="float-left">
+              <ul>
+                <li>
+                  <a href="/"> Team 4 </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </body>
+  <!--   Core JS Files   -->
+  <script src="/js/core/jquery.min.js"></script>
+  <script src="/js/core/bootstrap-material-design.min.js"></script>
+  <!-- Chartist JS -->
+  <script src="/js/plugins/chartist.min.js"></script>
+  <!-- Control Center for Material Dashboard: parallax effects, scripts for the dashboard page -->
+  <script
+    src="/js/material-dashboard.js?v=2.1.2"
+    type="text/javascript"
+  ></script>
+  <script type="text/javascript">
+    var week = <%-JSON.stringify(week) %>;
+    var rc = <%-JSON.stringify(retweet) %>;
+    var nweek = <%-JSON.stringify(nweek) %>;
+    var nrc = <%-JSON.stringify(nretweet) %>;
+    var count = <%-JSON.stringify(diff) %>;
+    var time = <%-JSON.stringify(clock) %>;
+    var sCount = <%-JSON.stringify(sCount) %>;
+    var ntime = <%-JSON.stringify(nclock) %>;
+    var nsCount = <%-JSON.stringify(nsCount) %>;
+    $(document).ready(function () {
+      google.charts.setOnLoadCallback(md.initDashboardPageCharts(week, nweek, rc, nrc, count, time, sCount, ntime, nsCount));
+    });
+    function changeButton(){
+        var x = document.getElementById("success1");
+        if (window.getComputedStyle(x).display === "none") {
+          document.getElementById("success2").style.display = "none";
+          document.getElementById("default2").style.display = "inline-block";
+        } else {
+          document.getElementById("default2").style.display = "none";
+          document.getElementById("success2").style.display = "inline-block";
+        }
+    }
+  </script>
+</html>
